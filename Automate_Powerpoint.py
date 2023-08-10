@@ -5,13 +5,11 @@ import matplotlib.pyplot as plt
 from pptx.util import Inches, Pt
 from pptx.dml.color import RGBColor
 import os
-
 from powerpoint import analysis_week, plot_split
 
 
-
 # Define days dictionary
-dict_days = {
+dictionary_days = {
     'MON': 'Monday',
     'TUE': 'Tuesday',
     'WED': 'Wednesday',
@@ -20,20 +18,21 @@ dict_days = {
     'SAT': 'Saturday',
     'SUN': 'Sunday'
 }
+
 # Weeks
-LIST_WEEKS = dict_days['WEEK'].unique()
+LIST_WEEKS = dictionary_days['WEEK'].unique()
 
 # Load dataframes
-df_day = pd.read_csv('volumes_per_day.csv', index_col=0)
-df_lior = pd.read_csv('lines_per_day.csv', index_col=0)
+df_day = pd.read_csv('volumes per day.csv', index_col=0)
+df_lior = pd.read_csv('lines per day.csv', index_col=0)
 COLS_IN = list(df_lior.columns[0:8])
 
 # Create PowerPoint presentation
-prs = Presentation()
+present = Presentation()
 
 # Introduction Slide
-title_slide_layout = prs.slide_layouts[0]
-slide = prs.slides.add_slide(title_slide_layout)
+title_slide_layout = present.slide_layouts[0]
+slide = present.slides.add_slide(title_slide_layout)
 title = slide.shapes.title
 subtitle = slide.placeholders[1]
 background = slide.background
@@ -46,13 +45,13 @@ subtitle.text = f'Orders/day for the last {len(LIST_WEEKS)} weeks'
 subtitle.text_frame.paragraphs[0].font.color.rgb = RGBColor(255, 255, 255)
 
 # Analysis per Week
-image_slide_layout = prs.slide_layouts[5]
+image_slide_layout = present.slide_layouts[5]
 page = 1
 
 for WEEK in LIST_WEEKS:
     avg_ratio, max_ratio, busy_day, max_lines, total_lines = analysis_week(df_day, WEEK)
     
-    slide = prs.slides.add_slide(image_slide_layout)
+    slide = present.slides.add_slide(image_slide_layout)
     shapes = slide.shapes
     title_shape = shapes.title
     title_shape.text = f'Warehouse Workload ({WEEK})'
@@ -92,7 +91,7 @@ for WEEK in LIST_WEEKS:
 # Order Profile Slide
 total_orders, LIST_ANALYSIS = plot_split(df_lior)
 
-slide = prs.slides.add_slide(image_slide_layout)
+slide = present.slides.add_slide(image_slide_layout)
 shapes = slide.shapes
 title_shape = shapes.title
 title_shape.text = 'Order Profile'
@@ -124,4 +123,4 @@ p.font.size = Pt(15)
 page += 1
 
 # Save the presentation
-prs.save('Warehouse_Workload_Report.pptx')
+present.save('Warehouse_Workload_Report.pptx')
